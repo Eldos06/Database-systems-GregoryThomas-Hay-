@@ -1,0 +1,97 @@
+--  CREATE DATABASE Example_ComputedColumn2
+CREATE DATABASE TestProduct_computedCOlumn2
+
+CREATE TABLE tblPRODUCT_TYPE
+(ProductTypeID INT IDENTITY(1, 1) PRIMARY KEY,
+ProductTypeName VARCHAR(50) NOT NULL,
+ProductTypeDescr VARCHAR(500) NULL)
+GO
+
+CREATE TABLE tblPRODUCT
+(ProductID INT IDENTITY(1, 1) PRIMARY KEY,
+ProductName VARCHAR(50) NOT NULL,
+Price NUMERIC(8, 2) NOT NULL,
+ProductTypeID INT FOREIGN KEY REFERENCES tblPRODUCT_TYPE (ProductTypeID) NOT NULL,
+ProductDescr VARCHAR(500) NULL)
+GO
+
+CREATE TABLE tblCUSTOMER
+(CustomerID INT IDENTITY(1, 1) PRIMARY KEY,
+Fname VARCHAR(30) NOT NULL,
+Lname VARCHAR(30) NOT NULL,
+BirthDate DATE NOT NULL)
+GO
+
+CREATE TABLE tblORDER
+(OrderID INT IDENTITY(1, 1) PRIMARY KEY,
+OrderDate DATE NOT NULL,
+CustomerID INT FOREIGN KEY REFERENCES tblCUSTOMER (CustomerID) NOT NULL)
+GO
+
+CREATE TABLE tblORDER_PRODUCT
+(OrderProductID INT IDENTITY(1, 1) PRIMARY KEY,
+OrderID INT NOT NULL,
+ProductID INT NOT NULL,
+Quantity INT NOT NULL)
+GO
+
+
+ALTER TABLE tblORDER_PRODUCT
+ADD CONSTRAINT FK_tblORDER_PRODUCT_OrderID
+	FOREIGN KEY (OrderID)
+	REFERENCES tblORDER (OrderID),
+	CONSTRAINT FK_tblORDER_PRODUCT_ProductID
+	FOREIGN KEY (ProductID)
+	REFERENCES tblPRODUCT (ProductID)
+GO
+
+--- Write SQL code to establish a computed columleveraging a User-Defined function	
+CREATE FUNCTION dbo.FN_Calc_LineExtend (@PK INT)
+RETURNS INT
+AS
+BEGIN 
+	DECLARE @RET INT;
+
+	SELECT @RET = P.Price * OP.Quantity
+	FROM tblPRODUCT P
+	JOIN tblORDER_PRODUCT OP ON P.ProductID = OP.ProductID
+	WHERE OP.OrderProductID = @PK;
+
+
+	RETURN @RET;
+END
+GO
+
+ALTER TABLE tblORDER_PRODUCT
+ADD  CALC_PriceExtd AS (dbo.FN_Calc_LineExtend (OrderProductID))
+GO
+
+-- create a second computed column --> requires a new function 
+CREATE FUNCTION dbo.FN_Calc_OrderTotal (@PK INT)
+RETURNS NUMERIC(8,2)
+AS
+BEGIN
+    DECLARE @RET NUMERIC(8,2);
+
+    SELECT @RET = SUM(OP.CALC_PriceExtd)
+    FROM tblORDER_PRODUCT OP
+    JOIN tblORDER O ON OP.OrderID = O.OrderID
+    WHERE O.OrderID = @PK;
+
+    RETURN @RET;
+END
+GO
+
+ALTER TABLE tblORDER
+ADD CALC_OrderTotal AS (dbo.FN_Calc_OrderTotal (OrderID))
+
+
+
+
+
+
+	
+
+
+
+

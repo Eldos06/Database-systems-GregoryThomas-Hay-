@@ -1,0 +1,127 @@
+<component name="InspectionProjectProfileManager">
+  <profile version="1.0">
+    <option name="myName" value="Project Default" />
+    <inspection_tool class="PyPackageRequirementsInspection" enabled="true" level="WARNING" enabled_by_default="true">
+      <option name="ignoredPackages">
+        <list>
+          <option value="aiodns" />
+          <option value="aiofiles" />
+          <option value="aiohappyeyeballs" />
+          <option value="aiohttp" />
+          <option value="aiohttp-cors" />
+          <option value="aiopg" />
+          <option value="aiosignal" />
+          <option value="alembic" />
+          <option value="annotated-types" />
+          <option value="anyio" />
+          <option value="async-timeout" />
+          <option value="attrs" />
+          <option value="beautifulsoup4" />
+          <option value="blinker" />
+          <option value="branca" />
+          <option value="Brotli" />
+          <option value="cachetools" />
+          <option value="certifi" />
+          <option value="cffi" />
+          <option value="charset-normalizer" />
+          <option value="click" />
+          <option value="colorama" />
+          <option value="comtypes" />
+          <option value="dnspython" />
+          <option value="docker" />
+          <option value="email_validator" />
+          <option value="fake-useragent" />
+          <option value="fastapi" />
+          <option value="fastapi-cli" />
+          <option value="Flask" />
+          <option value="flutter" />
+          <option value="folium" />
+          <option value="frozenlist" />
+          <option value="google-api-core" />
+          <option value="google-auth" />
+          <option value="google-cloud-speech" />
+          <option value="googleapis-common-protos" />
+          <option value="greenlet" />
+          <option value="grpcio" />
+          <option value="grpcio-status" />
+          <option value="h11" />
+          <option value="httpcore" />
+          <option value="httptools" />
+          <option value="httpx" />
+          <option value="idna" />
+          <option value="itsdangerous" />
+          <option value="Jinja2" />
+          <option value="kotlin" />
+          <option value="lxml" />
+          <option value="Mako" />
+          <option value="markdown-it-py" />
+          <option value="MarkupSafe" />
+          <option value="mdurl" />
+          <option value="multidict" />
+          <option value="mypy" />
+          <option value="mypy_extensions" />
+          <option value="mysql-connector-python" />
+          <option value="numpy" />
+          <option value="orjson" />
+          <option value="path" />
+          <option value="pathspec" />
+          <option value="pillow" />
+          <option value="prettytable" />
+          <option value="propcache" />
+          <option value="proto-plus" />
+          <option value="protobuf" />
+          <option value="psycopg2-binary" />
+          <option value="pyasn1" />
+          <option value="pyasn1_modules" />
+          <option value="pycares" />
+          <option value="pycparser" />
+          <option value="pydantic" />
+          <option value="pydantic-extra-types" />
+          <option value="pydantic-settings" />
+          <option value="pydantic_core" />
+          <option value="pydub" />
+          <option value="pyfiglet" />
+          <option value="pygame" />
+          <option value="Pygments" />
+          <option value="pypiwin32" />
+          <option value="pyTelegramBotAPI" />
+          <option value="python-dotenv" />
+          <option value="python-multipart" />
+          <option value="python-telegram-bot" />
+          <option value="pyttsx3" />
+          <option value="pywin32" />
+          <option value="PyYAML" />
+          <option value="requests" />
+          <option value="rich" />
+          <option value="rich-toolkit" />
+          <option value="rsa" />
+          <option value="shellingham" />
+          <option value="sniffio" />
+          <option value="soupsieve" />
+          <option value="SpeechRecognition" />
+          <option value="SQLAlchemy" />
+          <option value="starlette" />
+          <option value="tabulate" />
+          <option value="typer" />
+          <option value="typing_extensions" />
+          <option value="ujson" />
+          <option value="urllib3" />
+          <option value="uvicorn" />
+          <option value="watchfiles" />
+          <option value="wcwidth" />
+          <option value="websockets" />
+          <option value="Werkzeug" />
+          <option value="xyzservices" />
+          <option value="yarl" />
+        </list>
+      </option>
+    </inspection_tool>
+    <inspection_tool class="PyUnresolvedReferencesInspection" enabled="true" level="WARNING" enabled_by_default="true">
+      <option name="ignoredIdentifiers">
+        <list>
+          <option value="list.popleft" />
+        </list>
+      </option>
+    </inspection_tool>
+  </profile>
+</component>
