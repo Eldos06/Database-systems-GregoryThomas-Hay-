@@ -279,7 +279,7 @@ CREATE OR ALTER PROCEDURE yeld_INSERT_tblPRODUCT
 	AS
 	DECLARE @PT_ID INT
 	SET @PT_ID = (SELECT ProductTypeID FROM tblPRODUCT_TYPE
-			      WHERE ProductTypeName	 = 'Software')
+			      WHERE ProductTypeName	 = PT_Name)
 
 	IF @PT_ID IS NULL
 		BEGIN
