@@ -271,6 +271,114 @@ VALUES
     '1 year license');
 GO
 
+--- creating NESTED PROCEDURE to use in the base procedure that begins on line 127
+CREATE PROCEDURE yeldos_GetProdTypeID
+	@PT_Name2 VARCHAR(50),
+	@PT_ID_2     INT OUTPUT
+	AS
+	SET @PT_ID_2 = (SELECT ProductTypeID
+					FROM tblPRODUCT_TYPE
+					WHERE ProductTypeName = @PT_Name2)
+GO
+
+CREATE OR ALTER PROCEDURE yeldos_INSERT_tblPRODUCT
+	@Pname	VARCHAR(50),
+	@Price  NUMERIC(8,2),
+	@PTname VARCHAR(50),
+	@Pdescr VARCHAR(500)
+	AS
+	BEGIN
+	DECLARE @PT_ID INT
+	EXEC yeldos_GetProdTypeID
+	@PT_Name2 = @PTname,
+	@PT_ID_2  = @PT_ID
+
+	IF @PT_ID IS NULL
+		BEGIN
+			PRINT '@PT_ID is empty, check spelling';
+			THROW 55442, '@PT_ID can not be NULL', 1;
+		END
+	BEGIN TRAN T1
+		INSERT INTO tblPRODUCT (ProductName, Price, ProductTypeID, ProductDescr)
+		VALUES (@Pname, @Price, @PT_ID, @Pdescr)
+		IF @@ERROR <> 0
+			BEGIN
+				PRINT('Something just prior to COMMIT')
+				ROLLBACK TRAN T1
+			END
+		ELSE
+			COMMIT TRAN T1
+	END
+GO
+--- Objective: Write a nested procedure to fetch the ProductTypeID for a given ProductTypeName.
+
+--Steps:
+
+--Write a stored procedure yeldos_GetProdTypeID to return the ProductTypeID for a given ProductTypeName.
+--Test the nested procedure by passing a ProductTypeName and retrieving the ProductTypeID.
+CREATE OR ALTER PROCEDURE yeldos_GetProdTypeID
+	@PTname2 VARCHAR(50),
+	@PT_ID_2 INT OUTPUT
+	AS
+	SET @PT_ID_2 = (SELECT ProductTypeID
+				    FROM tblPRODUCT_TYPE
+					WHERE ProductTypeName = @PTname)
+GO
+
+-- Create or alter the procedure with correct parameters
+CREATE OR ALTER PROCEDURE yeldos_Delete_Product
+    @PTname VARCHAR(50),       -- The Product Type Name to delete
+    @Pname1 VARCHAR(50),       -- New product name to insert
+    @Price1 NUMERIC(8, 2),     -- New product price to insert
+    @PTname1 VARCHAR(50),      -- New product type name to insert
+    @Pdescr1 VARCHAR(500)      -- New product description to insert
+AS
+BEGIN
+    DECLARE @PTID INT;
+
+    -- Get ProductTypeID for the given ProductTypeName
+    EXEC yeldos_GetProdTypeID @PT_Name2 = @PTname OUTPUT;
+
+    -- Start a transaction
+    BEGIN TRANSACTION;
+
+    -- Delete the product type if the ProductTypeID exists
+    DELETE FROM tblPRODUCT_TYPE 
+    WHERE ProductTypeID = @PTID;
+
+    -- Insert the new product
+    EXEC yeldos_INSERT_tblPRODUCT
+        @Pname = @Pname1,
+        @Price = @Price1,
+        @PTname = @PTname1,
+        @Pdescr = @Pdescr1;
+
+    -- Commit the transaction
+    COMMIT TRANSACTION;
+END;
+GO
+
+-- Execute the stored procedure and provide the parameters
+EXEC yeldos_Delete_Product
+    @PTname = 'Electronics',     -- Product Type to delete
+    @Pname1 = 'Laptop',          -- New product name
+    @Price1 = 1000,              -- New product price
+    @PTname1 = 'Games',          -- New product type name
+    @Pdescr1 = '1 TB SSD';       -- New product description
+
+
+
+SELECT * FROM tblCARD
+
+
+
+
+
+
+
+
+--- Nested Procedures Finished -----
+
 CREATE OR ALTER PROCEDURE yeld_INSERT_tblPRODUCT
 	@P_Name VARCHAR(50),
 	@Price       NUMERIC(8, 2),
@@ -279,7 +387,7 @@ CREATE OR ALTER PROCEDURE yeld_INSERT_tblPRODUCT
 	AS
 	DECLARE @PT_ID INT
 	SET @PT_ID = (SELECT ProductTypeID FROM tblPRODUCT_TYPE
-			      WHERE ProductTypeName	 = PT_Name)
+			      WHERE ProductTypeName	 = @PT_Name)
 
 	IF @PT_ID IS NULL
 		BEGIN
@@ -299,6 +407,8 @@ CREATE OR ALTER PROCEDURE yeld_INSERT_tblPRODUCT
 		COMMIT TRAN T1
 GO
 
+
+
 EXEC yeld_INSERT_tblPRODUCT
 @P_Name = 'SAMSUNG A52',
 @Price  = 273,
@@ -306,4 +416,218 @@ EXEC yeld_INSERT_tblPRODUCT
 @P_Descr = 'Phone Samsung Galaxy A52 is smart phone'
 
 SELECT * FROM tblPRODUCT
+GO
 
+
+
+
+				
+EXEC yeldos_INSERT_tblPRODUCT
+@Pname	= 'Orange Juice 1L',
+@Price  = 650,
+@PTname = 'Food',
+@Pdescr = 'Just enjoy'
+
+SELECT * FROM tblPRODUCT
+GO
+
+
+CREATE OR ALTER PROCEDURE SET_Price_Type
+	@ProductName     VARCHAR(50),
+	@Price			 NUMERIC(8, 2),	
+	@ProductTypeName VARCHAR(50)
+	AS
+	BEGIN
+		DECLARE @PT_ID INT;
+
+		--inline look up 
+		SET @PT_ID = (SELECT ProductTypeID FROM tblPRODUCT_TYPE
+					  WHERE ProductTypeName = @ProductTypeName)
+
+		IF @PT_ID IS NULL
+		BEGIN;
+			THROW 55450, 'Invalid ProductTypeName', 1;
+			RETURN;
+		END
+
+		UPDATE tblPRODUCT
+		SET
+			Price = @Price
+			WHERE ProductName = @ProductName 
+			AND   ProductTypeID = @PT_ID;
+
+		
+	END;
+GO
+
+SELECT ProductID, ProductName, Price, ProductTypeName FROM tblPRODUCT P
+JOIN tblPRODUCT_TYPE PT ON P.ProductTypeID = PT.ProductTypeID
+ORDER BY Price ASC;
+
+EXEC SET_Price_Type
+@ProductName     = 'Notebook',
+@Price		     = 7.50,	
+@ProductTypeName = 'Stationery';
+GO
+
+
+CREATE OR ALTER PROCEDURE DEL_tblPRODUCT
+	@ProductName  VARCHAR(50),
+	@ProductID    INT
+	AS
+	BEGIN
+		DELETE FROM tblPRODUCT
+		WHERE ProductName = @ProductName
+		AND   ProductID   = @ProductID
+	END
+GO
+
+EXEC DEL_tblPRODUCT
+@ProductName = 'Cat Toy',
+@ProductID   = 22
+GO
+
+CREATE OR ALTER PROCEDURE GetSubID
+	@name VARCHAR(50),
+	@SID INT OUTPUT
+	AS
+	SET @SID = (SELECT SubjectID FROM tblSUBJECT
+				WHERE SubjectName = @name)
+GO
+
+CREATE OR ALTER PROCEDURE InsertDECK_IFSIDexist
+	@DeckName VARCHAR(100),
+	@DeckDescr VARCHAR(500),
+	@SubName  VARCHAR(50),
+	@OwnerID  INT
+
+
+	AS
+	BEGIN 
+		DECLARE @SubID INT;
+
+		EXEC GetSubID
+		@name = @SubName,
+		@SID = @SubID OUTPUT
+
+		IF @SubID IS NULL
+			BEGIN;
+				THROW 50001, 'Subject does not exists, Check your spelling', 1;
+			END
+
+		BEGIN TRAN T1
+			INSERT INTO tblDECK(DeckName, DeckDescr, OwnerID, SubjectID)
+			VALUES             (@DeckName, @DeckDescr, @OwnerID, @SubID)
+			
+			IF @@ERROR <> 0
+			BEGIN
+				ROLLBACK TRAN T1;
+				THROW 50002, 'Insert into tblDEKC failed', 1;
+			END
+
+			COMMIT TRAN T1
+	END
+GO
+
+EXEC InsertDECK_IFSIDexist
+	@DeckName = 'English Unit 4',
+	@DeckDescr = 'Grammar, Vocabulary',
+	@SubName = 'Computer Science' ,
+	@OwnerID  = 2
+GO
+--ƒобавить карточку в деку только если Deck существует.
+
+CREATE OR ALTER PROCEDURE GetDeckID
+	@Dname VARCHAR(100),
+	@Ddescr VARCHAR(500),
+	@DeckID INT OUTPUT
+	AS
+	SET @DeckID = (SELECT DeckID FROM tblDECK
+				   WHERE  DeckName = @Dname
+				   AND    DeckDescr = @Ddescr)
+GO
+
+CREATE OR ALTER PROCEDURE INSERT_CARD
+	@DeckName  VARCHAR(50),
+	@DeckDescr VARCHAR(50),
+	@CardFront VARCHAR(500),
+	@CardBack  VARCHAR(500)
+	
+	AS
+	BEGIN
+		DECLARE @DID INT;
+
+		EXEC GetDeckID
+		@Dname = @DeckName,
+		@Ddescr = @DeckDescr,
+		@DeckID = @DID OUTPUT
+
+		IF @DID IS NULL
+			BEGIN;
+				THROW 50001, 'Deck is not exist, check your spelling', 1;
+			END
+
+		BEGIN TRAN T1
+			INSERT INTO tblCARD(DeckID, CardFront, CardBack)
+			VALUES             (@DID,   @CardFront, @CardBack)
+
+			IF @@ERROR <> 0
+				BEGIN;
+					ROLLBACK TRAN T1;
+					THROW 50002, 'Something went wrong while INSERT', 1
+				END
+			COMMIT TRAN T1
+	END
+
+SELECT * FROM tblDECK
+	
+EXEC INSERT_CARD
+	@DeckName  = 'Algebra Deck',
+	@DeckDescr = 'Deck for algebra exercises',
+	@CardFront = 'pi',
+	@CardBack  ='3.14159265'
+
+SELECT * FROM tblCARD
+GO
+CREATE OR ALTER PROCEDURE GetCardID
+	@Front VARCHAR(500),
+	@Back  VARCHAR(500),
+	@DeckName VARCHAR(100),
+	@DeckDescr VARCHAR(100)
+	AS
+	BEGIN
+		DECLARE @DID INT;
+
+		EXEC GetDeckID
+		@Dname = @DeckName,
+		@Ddescr = @DeckDescr,
+		@DeckID = @DID OUTPUT
+
+		IF @DID IS NULL
+			BEGIN;
+				THROW 50001, 'Deck is not exist, check your spelling', 1;
+			END
+
+CREATE OR ALTER PROCEDURE GetAssignID
+	@
+		
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+			 
