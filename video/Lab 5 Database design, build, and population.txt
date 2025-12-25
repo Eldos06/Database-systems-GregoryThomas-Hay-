@@ -1,0 +1,18 @@
+Each student will take the entities STUDENT, TASK, REVIEW_TYPE, TASK_TYPE, RATING, STUDENT_TASK, and REVIEW and conduct the following:
+
+Draw a database design in 3NF (PK/FK and proper crow's foot notation)
+Write the CREATE TABLE statements to establish each table with the following conditions:
+Appropriate primary keys (integer data type, surrogate, and auto-increment)
+ALTER TABLE statements for all foreign keys
+Write the INSERT INTO statements to populate 5 rows into each entity that does NOT have a foreign key
+Write the SQL to create 'nested' stored procedures to get each foreign key ID value when provided a name
+This requires proper use of parameters and variables
+Be aware that there may be a need to have a multiple table JOIN statements in the GetID procedures!
+Write the SQL to INSERT a single value into an associative entity with a STORED PROCEDURE that calls the nested procedures  
+include proper error-handling if any variable happens to be NULL
+Include explicit transaction named J1
+Write the SQL to create and enforce the following business rule:
+"No student younger than 18 may be assigned a task of type 'physical labor' on any Friday"
+Hint: this requires capturing birthdate, task date, as well as using DATEPART() function!
+Write the SQL to create a computed column that calculates the lifetime total number of tasks assigned to each student
+Hint: this includes a User-Defined Function that takes in a parameter!
